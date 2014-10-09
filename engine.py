@@ -39,6 +39,7 @@ def setup_images():
             "BlueGem": "Gem Blue.png",
             "GreenGem": "Gem Green.png",
             "OrangeGem": "Gem Orange.png",
+            "EnemyBug" : "Enemy Bug.png",
             "Heart": "Heart.png",
             "Key": "Key.png",
             "Boy": "Character Boy.png",
