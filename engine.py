@@ -28,6 +28,8 @@ def setup_images():
             "Block": "Plain Block.png",
             "GrassBlock": "Grass Block.png",
             "StoneBlock": "Stone Block.png",
+            "StoneBlockTall": "Stone Block Tall.png",
+            "DirtBlock": "Dirt Block.png",
             "WaterBlock": "Water Block.png",
             "WoodBlock": "Wood Block.png",
             "ShortTree": "Tree Short.png",

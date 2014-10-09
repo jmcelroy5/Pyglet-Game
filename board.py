@@ -1,4 +1,5 @@
 import pyglet
+import game
 
 #
 # Create a game board object to store the world
@@ -37,6 +38,8 @@ class Board(object):
         self.game_map      = []
         self.bg_sprites    = []
 
+        self.player_health = 5
+
     # Draw the game board
     def draw_board(self):
         # Make a map with a stoneblock border and filled with grass
@@ -45,9 +48,9 @@ class Board(object):
         for i in range(self.height):
             if i == 0 or i == self.height-1:
                 # On the boundaries
-                game_map.append(["Block"] * self.width)
+                game_map.append(["DirtBlock"] * self.width)
             else:
-                row = ["Block"] + (["GrassBlock"] * inner_width) + ["Block"]
+                row = ["DirtBlock"] + (["GrassBlock"] * inner_width) + ["DirtBlock"]
                 game_map.append(row)
         
         self.base_board = game_map
@@ -58,8 +61,6 @@ class Board(object):
 
         # Label to hold message text at the top of the screen
         self.message = pyglet.text.Label(text = "", x=10, y=self.SCREEN_HEIGHT-30)
-        # self.status = pyglet.image.Label(image= "images/Heart.png", x = 10, y=self.SCREEN_HEIGHT-30)
-
 
         # Actually draw the background sprites on the screen
         self.draw_game_map()
@@ -78,11 +79,24 @@ class Board(object):
                 self.draw_bg(sprite, x, y)
                 self.bg_sprites.append(sprite)
 
-
     # Change the text message at the top of the game screen
     def draw_msg(self, message):
         self.message.text = message
         pass
+
+    def draw_hearts(self):
+        counter = 0
+        for i in range(self.player_health):
+            health_bar = pyglet.image.load("heart.png")
+            heart = pyglet.sprite.Sprite(health_bar)
+            heart.x = self.SCREEN_WIDTH - (50 + counter)
+            heart.y = self.SCREEN_HEIGHT- 60
+            heart.draw()
+            counter += 50
+
+    def change_health(self, change):
+        self.player_health += change
+        self.draw_hearts()
 
     # Erase the text message at the top of the game screen
     def erase_msg(self):
@@ -154,28 +168,8 @@ class Board(object):
                 if el:
                     self.draw_active(el.sprite, x, y)
 
-            health_bar1 = pyglet.image.load("heart.png")
-            heart1 = pyglet.sprite.Sprite(health_bar1)
-            heart1.x = self.SCREEN_WIDTH -50
-            heart1.y = self.SCREEN_HEIGHT-60
-            heart1.draw()
+        # Draw health bar on game initialize
+        self.draw_hearts()
 
-            health_bar2 = pyglet.image.load("heart.png")
-            heart2 = pyglet.sprite.Sprite(health_bar2)
-            heart2.x = self.SCREEN_WIDTH - 100
-            heart2.y = self.SCREEN_HEIGHT- 60
-            heart2.draw()
 
-            health_bar3 = pyglet.image.load("heart.png")
-            heart3 = pyglet.sprite.Sprite(health_bar3)
-            heart3.x = self.SCREEN_WIDTH - 150
-            heart3.y = self.SCREEN_HEIGHT- 60
-            heart3.draw()
-
-        
-        # self.health_bar.draw()
-
-        #have piglet draw blank hearts
-        #check player object for Player.health
-        #have piglet draw # of hearts for Player.health
-
+      

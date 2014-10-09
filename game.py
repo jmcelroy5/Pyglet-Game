@@ -27,7 +27,7 @@ class EnemyBug(GameElement):
 
     def interact(self, player):
         #hurt the player.
-        player.health -= 1
+        GAME_BOARD.change_health(-1)
         GAME_BOARD.draw_msg("Ow! Your strength is at %r." % player.health)
 
 
@@ -38,11 +38,10 @@ class Rock(GameElement):
 class Character(GameElement):
     IMAGE = "Princess"
     
-
     def __init__(self):
         GameElement.__init__(self)
         self.inventory = []
-        self.health = 5
+        self.health = GAME_BOARD.player_health
 
     def next_pos(self, direction):
 
@@ -68,7 +67,6 @@ class Character(GameElement):
             direction = "left"
 
         self.board.draw_msg("[%s] moves %s." %(self.IMAGE, direction) )
-
 
         if direction:
             next_location = self.next_pos(direction)
