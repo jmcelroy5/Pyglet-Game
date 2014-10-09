@@ -37,6 +37,7 @@ class Rock(GameElement):
 
 class Character(GameElement):
     IMAGE = "Princess"
+    
 
     def __init__(self):
         GameElement.__init__(self)
@@ -75,7 +76,7 @@ class Character(GameElement):
                 next_x = next_location[0]
                 next_y = next_location[1]
 
-                if 0 <= next_x < 6 and 0 <= next_y < 6: 
+                if 0 <= next_x < GAME_WIDTH and 0 <= next_y < GAME_HEIGHT: 
 
                     existing_el = self.board.get_el(next_x, next_y)
 
