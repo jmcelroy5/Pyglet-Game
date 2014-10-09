@@ -9,8 +9,8 @@ GAME_BOARD = None
 DEBUG = False
 ######################
 
-GAME_WIDTH = 6
-GAME_HEIGHT = 6
+GAME_WIDTH = 8
+GAME_HEIGHT = 7
 
 #### Put class definitions here ####
 class Gem(GameElement):
@@ -82,7 +82,7 @@ class Character(GameElement):
                     if existing_el:
                         existing_el.interact(self)
 
-                    elif existing_el and existing_el.SOLID:
+                    if existing_el and existing_el.SOLID:
                         self.board.draw_msg("AHH! There is something in my way.")
 
                     elif existing_el is None or not existing_el.SOLID:

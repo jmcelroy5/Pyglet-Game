@@ -58,6 +58,8 @@ class Board(object):
 
         # Label to hold message text at the top of the screen
         self.message = pyglet.text.Label(text = "", x=10, y=self.SCREEN_HEIGHT-30)
+        # self.status = pyglet.image.Label(image= "images/Heart.png", x = 10, y=self.SCREEN_HEIGHT-30)
+
 
         # Actually draw the background sprites on the screen
         self.draw_game_map()
@@ -75,7 +77,6 @@ class Board(object):
                 sprite = pyglet.sprite.Sprite(image)
                 self.draw_bg(sprite, x, y)
                 self.bg_sprites.append(sprite)
-
 
 
     # Change the text message at the top of the game screen
@@ -152,4 +153,29 @@ class Board(object):
                 el = self.content_layer[y][x]
                 if el:
                     self.draw_active(el.sprite, x, y)
+
+            health_bar1 = pyglet.image.load("heart.png")
+            heart1 = pyglet.sprite.Sprite(health_bar1)
+            heart1.x = self.SCREEN_WIDTH -50
+            heart1.y = self.SCREEN_HEIGHT-60
+            heart1.draw()
+
+            health_bar2 = pyglet.image.load("heart.png")
+            heart2 = pyglet.sprite.Sprite(health_bar2)
+            heart2.x = self.SCREEN_WIDTH - 100
+            heart2.y = self.SCREEN_HEIGHT- 60
+            heart2.draw()
+
+            health_bar3 = pyglet.image.load("heart.png")
+            heart3 = pyglet.sprite.Sprite(health_bar3)
+            heart3.x = self.SCREEN_WIDTH - 150
+            heart3.y = self.SCREEN_HEIGHT- 60
+            heart3.draw()
+
+        
+        # self.health_bar.draw()
+
+        #have piglet draw blank hearts
+        #check player object for Player.health
+        #have piglet draw # of hearts for Player.health
 
