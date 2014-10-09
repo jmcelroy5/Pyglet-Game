@@ -74,28 +74,22 @@ class Character(GameElement):
             if next_location:
                 next_x = next_location[0]
                 next_y = next_location[1]
-                board_restrict = [-1, 6, 6]
 
-                # if next_x < 0 or next_x >= GAME_WIDTH or next_y < 0 or next_y >= GAME_HEIGHT:
-                #     self.board.draw_msg("I can't go that way! I'll fall off.")
-                #     self.board.del_el(self.x, self.y)
-                #     self.board.set_el(self.x, self.y, self)
+                if 0 <= next_x < 6 and 0 <= next_y < 6: 
 
-                existing_el = self.board.get_el(next_x, next_y)
+                    existing_el = self.board.get_el(next_x, next_y)
 
-                if next_x or next_y in board_restrict:
-                    self.board.draw_msg("AHH! There is something in my way.")
-                    out_of_bounds = True
+                    if existing_el:
+                        existing_el.interact(self)
 
-                if existing_el:
-                    existing_el.interact(self)
+                    elif existing_el and existing_el.SOLID:
+                        self.board.draw_msg("AHH! There is something in my way.")
 
-                if existing_el and existing_el.SOLID:
-                    self.board.draw_msg("AHH! There is something in my way.")
-
-                elif existing_el is None or not existing_el.SOLID or not out_of_bounds:
-                    self.board.del_el(self.x, self.y)
-                    self.board.set_el(next_x, next_y, self)
+                    elif existing_el is None or not existing_el.SOLID:
+                        self.board.del_el(self.x, self.y)
+                        self.board.set_el(next_x, next_y, self)
+                else:
+                    self.board.draw_msg("You can't go that way!")
                     
 
 ####   End class definitions    ####
@@ -106,7 +100,6 @@ def initialize():
         (2,1),
         (1,2),
         (3,2),
-        (2,3)
     ]
 
     rocks = []
@@ -117,7 +110,7 @@ def initialize():
         GAME_BOARD.set_el(pos[0],pos[1], rock)
         rocks.append(rock)
 
-    rocks[-1].SOLID = False
+    # rocks[-1].SOLID = False
 
     player = Character()
     GAME_BOARD.register(player)
