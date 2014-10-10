@@ -36,6 +36,7 @@ def setup_images():
             "TallTree": "Tree Tall.png",
             "Rock": "Rock.png",
             "Chest": "Chest Closed.png",
+            "OpenChest": "Chest Open.png",
             "DoorClosed": "Door Tall Closed.png",
             "DoorOpen": "Door Tall Open.png",
             "BlueGem": "Gem Blue.png",

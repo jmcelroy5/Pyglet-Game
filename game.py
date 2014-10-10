@@ -44,9 +44,11 @@ class EnemyBug(GameElement):
             self.direction *=- 1
             next_x = self.x
 
+        # counter - cycles through a list of images 
+
         existing_el = self.board.get_el(next_x, self.y)
 
-        if hasattr(existing_el,"GIRL"):
+        if isinstance(existing_el, Character):
             existing_el.board.del_el(existing_el.x, existing_el.y)
             existing_el.board.set_el(1,1, existing_el)
             GAME_BOARD.player_health -= 1
@@ -66,15 +68,31 @@ class Wall(GameElement):
     IMAGE = "StoneBlock"
     SOLID = True
 
+class Key(GameElement):
+    IMAGE = "Key"
+    SOLID = False
+
+    def interact(self, player):
+        player.inventory.append(self)
+        GAME_BOARD.draw_msg("You have the key! Go find the treasure chest.")
+        player.hasKey = True
+
+class Treasure(GameElement):
+    IMAGE = "Chest"
+
+    def interact(self,player):
+        if player.hasKey == True:
+            self.change_image("OpenChest")
+
 class Character(GameElement):
     IMAGE = "Princess"
     SOLID = True
-    GIRL = True
     
     def __init__(self):
         GameElement.__init__(self)
         self.inventory = []
         self.health = GAME_BOARD.player_health
+        self.hasKey = False
 
     def next_pos(self, direction):
 
@@ -114,12 +132,12 @@ class Character(GameElement):
                     if existing_el:
                         existing_el.interact(self)
 
-                    if hasattr(existing_el, "ENEMY"):
+                    if isinstance(existing_el,EnemyBug):
                         self.board.draw_msg("OW! Dang that hurt.")
                         self.board.del_el(self.x, self.y)
                         self.board.set_el(1, 1, self)
 
-                    if existing_el and existing_el.SOLID:
+                    if existing_el and existing_el.SOLID: #this is still showing the message if the bug hits girl
                         self.board.draw_msg("AHH! There is something in my way.")
 
                     elif existing_el is None or not existing_el.SOLID:
@@ -143,8 +161,6 @@ def initialize():
         (5,2),
         (5,3),
         (5,4),
-
-
     ]
 
     walls = []
@@ -174,6 +190,14 @@ def initialize():
         GAME_BOARD.set_el(pos[0],pos[1], bug)
         bugs.append(bug)
 
+    chest = Treasure()
+    GAME_BOARD.register(chest)
+    GAME_BOARD.set_el(3,1, chest)
+
+    key = Key()
+    GAME_BOARD.register(key)
+    GAME_BOARD.set_el(7,4, key)
+
     # gem_positions = [
     #     (3,1),
     #     (0,3)
@@ -188,15 +212,11 @@ def initialize():
     #     gems.append(gem)
 
     tree_positions = [
-
         (3,0),
         (4,0),
         (5,0),
         (6,0),
         (7,0),
-
-
-
     ]
 
     trees = []
