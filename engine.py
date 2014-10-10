@@ -41,7 +41,8 @@ def setup_images():
             "BlueGem": "Gem Blue.png",
             "GreenGem": "Gem Green.png",
             "OrangeGem": "Gem Orange.png",
-            "EnemyBug" : "Enemy Bug.png",
+            "EnemyBugR" : "Enemy Bug.png",
+            "EnemyBugL" : "Enemy Bug2.png",
             "Heart": "Heart.png",
             "Key": "Key.png",
             "Boy": "Character Boy.png",
@@ -120,10 +121,11 @@ def run():
     draw_list.append(board)
 
     # Set up the update clock
-    pyglet.clock.schedule_interval(update, 1/10.)
+    pyglet.clock.schedule_interval(update, 1.0)
     game.initialize()
     pyglet.app.run()
 
 
 if __name__ == "__main__":
+
     run()
