@@ -121,7 +121,6 @@ class Treasure(GameElement):
             GAME_BOARD.register(win_gem)
             self.board.set_el(3,2,win_gem)
 
-
 class Player1(Character): 
     IMAGE = "Princess"
     hasKey = False
@@ -232,8 +231,6 @@ def initialize():
     gems = []
 
     # for pos in gem_positions:  
-    win_gem = Gem()
-    GAME_BOARD.register(win_gem)
     # gems.append(win_gem)
 
     tree_positions = [
