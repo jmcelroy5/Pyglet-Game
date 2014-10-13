@@ -12,24 +12,67 @@ DEBUG = False
 GAME_WIDTH = 8
 GAME_HEIGHT = 6
 
-#### Put class definitions here ####
-class Gem(GameElement):
-    IMAGE = "BlueGem"
+### PARENT CLASSES (inherit from GameElement class) ###
+
+class Character(GameElement):
+
+    def __init__(self):
+        self.inventory = []
+        self.health = GAME_BOARD.player_health
+        self.SOLID = True
+
+class Enemy(GameElement):
+    """Game board elements that harm player"""
+
+    SOLID = True
+
+    def interact(self, player):
+        GAME_BOARD.change_health(-1)
+        GAME_BOARD.draw_msg("OUCH! That hurt. Your strength is at %r." % GAME_BOARD.player_health)
+
+    def check_for_character(self, next_x, next_y):
+        existing_el = self.board.get_el(next_x, next_y)
+
+        if isinstance(existing_el, Character):
+            existing_el.board.del_el(existing_el.x, existing_el.y)
+            existing_el.board.set_el(1,1, existing_el)
+            GAME_BOARD.change_health(-1)
+            GAME_BOARD.draw_msg("OUCH! That hurt. Your strength is at %r." % GAME_BOARD.player_health)
+ 
+        self.board.del_el(self.x, self.y)
+        self.board.set_el(next_x, self.y, self)
+
+class Barrier(GameElement):
+    """Game board elements that block player movement"""
+    SOLID = True
+
+    def interact(self, player):
+        self.board.draw_msg("There is something in my way.")
+
+class Reward(GameElement):
+    """Elements that increase player life"""
+    
     SOLID = False
 
     def interact(self, player):
         player.inventory.append(self)
-        GAME_BOARD.draw_msg("You just acuired a gem! You have %d items!" %(len(player.inventory)))
+        GAME_BOARD.draw_msg("You just acquired a %s! You have %d items!" %(self.reward_type, len(player.inventory)))
 
-class EnemyBug(GameElement):
+class Inventory(GameElement):
+    """Elements that player acquires for later use"""
+
+    SOLID = False
+
+
+### SUB CLASSES ###
+
+class Gem(Reward):
+    IMAGE = "OrangeGem"
+    reward_type = "gem"
+
+class EnemyBug(Enemy):
     IMAGE = "EnemyBugR"
-    SOLID = True
-    ENEMY = True
     direction = 1
-
-    def interact(self, player):
-        GAME_BOARD.change_health(-1)
-        GAME_BOARD.draw_msg("Ow! Your strength is at %r." % GAME_BOARD.player_health)
 
     def update(self, dt):
 
@@ -44,56 +87,45 @@ class EnemyBug(GameElement):
             self.direction *=- 1
             next_x = self.x
 
-        # counter - cycles through a list of images 
+        self.check_for_character(next_x, self.y)
 
-        existing_el = self.board.get_el(next_x, self.y)
-
-        if isinstance(existing_el, Character):
-            existing_el.board.del_el(existing_el.x, existing_el.y)
-            existing_el.board.set_el(1,1, existing_el)
-            GAME_BOARD.player_health -= 1
- 
-        self.board.del_el(self.x, self.y)
-        self.board.set_el(next_x, self.y, self)
-
-class Rock(GameElement):
+class Rock(Barrier):
     IMAGE = "Rock"
     SOLID = True
 
-class Tree(GameElement):
+class Tree(Barrier):
     IMAGE = "ShortTree"
     SOLID = True
 
-class Wall(GameElement):
+class Wall(Barrier):
     IMAGE = "StoneBlock"
     SOLID = True
 
-class Key(GameElement):
+class Key(Inventory):
     IMAGE = "Key"
     SOLID = False
 
     def interact(self, player):
-        player.inventory.append(self)
         GAME_BOARD.draw_msg("You have the key! Go find the treasure chest.")
         player.hasKey = True
 
 class Treasure(GameElement):
     IMAGE = "Chest"
+    SOLID = True
 
     def interact(self,player):
         if player.hasKey == True:
             self.change_image("OpenChest")
+            self.board.del_el(self.x,self.y,self)
+            win_gem = Gem()
+            GAME_BOARD.register(win_gem)
+            self.board.set_el(3,2,win_gem)
 
-class Character(GameElement):
+
+class Player1(Character): 
     IMAGE = "Princess"
-    SOLID = True
-    
-    def __init__(self):
-        GameElement.__init__(self)
-        self.inventory = []
-        self.health = GAME_BOARD.player_health
-        self.hasKey = False
-
+    hasKey = False
+        
     def next_pos(self, direction):
 
         if direction == "up":
@@ -117,7 +149,7 @@ class Character(GameElement):
         elif symbol == key.LEFT:
             direction = "left"
 
-        self.board.draw_msg("[%s] moves %s." %(self.IMAGE, direction) )
+        self.board.draw_msg("%s moves %s." %(self.IMAGE, direction))
 
         if direction:
             next_location = self.next_pos(direction)
@@ -132,20 +164,15 @@ class Character(GameElement):
                     if existing_el:
                         existing_el.interact(self)
 
-                    if isinstance(existing_el,EnemyBug):
-                        self.board.draw_msg("OW! Dang that hurt.")
+                    if isinstance(existing_el, Enemy):
                         self.board.del_el(self.x, self.y)
                         self.board.set_el(1, 1, self)
-
-                    if existing_el and existing_el.SOLID: #this is still showing the message if the bug hits girl
-                        self.board.draw_msg("AHH! There is something in my way.")
 
                     elif existing_el is None or not existing_el.SOLID:
                         self.board.del_el(self.x, self.y)
                         self.board.set_el(next_x, next_y, self)
                 else:
-                    self.board.draw_msg("You can't go that way!")
-                    
+                    self.board.draw_msg("You can't go that way!")   # out of bounds
 
 ####   End class definitions    ####
 
@@ -156,8 +183,9 @@ def initialize():
         (2,1),
         (2,2),
         (2,3),
-        (3,3),
-        (4,3),
+        (2,4),
+        (3,4),
+        (4,4),
         (5,2),
         (5,3),
         (5,4),
@@ -173,10 +201,9 @@ def initialize():
 
     #rocks[-1].SOLID = False
 
-    player = Character()
+    player = Player1()
     GAME_BOARD.register(player)
-    GAME_BOARD.set_el(1,1,player)
-    print player
+    GAME_BOARD.set_el(1,2,player)
 
     bug_positions = [
         (0,5)
@@ -199,17 +226,15 @@ def initialize():
     GAME_BOARD.set_el(7,4, key)
 
     # gem_positions = [
-    #     (3,1),
-    #     (0,3)
+    #     (0,0)
     # ]
 
-    # gems = []
+    gems = []
 
     # for pos in gem_positions:  
-    #     gem = Gem()
-    #     GAME_BOARD.register(gem)
-    #     GAME_BOARD.set_el(pos[0],pos[1],gem)
-    #     gems.append(gem)
+    win_gem = Gem()
+    GAME_BOARD.register(win_gem)
+    # gems.append(win_gem)
 
     tree_positions = [
         (3,0),

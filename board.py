@@ -97,6 +97,8 @@ class Board(object):
     def change_health(self, change):
         self.player_health += change
         self.draw_hearts()
+        if self.player_health < 1:
+            sys.exit("Game over!")
 
     # Erase the text message at the top of the game screen
     def erase_msg(self):

@@ -122,7 +122,7 @@ def run():
     draw_list.append(board)
 
     # Set up the update clock
-    pyglet.clock.schedule_interval(update, 1.0)
+    pyglet.clock.schedule_interval(update, 0.7)
     game.initialize()
     pyglet.app.run()
 
